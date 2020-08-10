@@ -1,5 +1,4 @@
-from ibm_watson import ApiException
-from ibm_watson import VisualRecognitionV3
+from ibm_watson import VisualRecognitionV3, ApiException
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 import json
 
@@ -17,12 +16,20 @@ visual_recognition = VisualRecognitionV3(
 visual_recognition.set_service_url(URL)
 
 # Classify an image
-try:
-    with open('./IMG_0136_copy.jpeg', 'rb') as images_file:
-        classes = visual_recognition.classify(
-            images_file=images_file,
-            threshold='0.6',
-            accept_language='en').get_result()
-        print(json.dumps(classes, indent=2))
-except ApiException as ex:
-    print("Method failed with status code ", ex.code, ": ", ex.message)
+def classifyImage(lang='en'):
+    try:
+        words = []
+        with open('./nature.jpg', 'rb') as images_file:
+            classes = visual_recognition.classify(
+                images_file=images_file,
+                threshold='0.6',
+                accept_language=lang).get_result()
+            #print(json.dumps(classes, indent=2))
+            for n in range(len(classes["images"][0]["classifiers"][0]["classes"])):
+                words.append(classes["images"][0]["classifiers"][0]["classes"][n]["class"])
+            print(words)
+    except ApiException as ex:
+        print("Method failed with status code ", ex.code, ": ", ex.message)
+
+classifyImage('en')
+classifyImage('ja')
